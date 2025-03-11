@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var brandModelYearMap = {}; // Stores brand -> model -> years
 
     // Fetch CSV file from GitHub
-    fetch("https://raw.githubusercontent.com/YOUR-GITHUB-USERNAME/YOUR-REPO-NAME/main/car_data.csv")
+    fetch("https://raw.githubusercontent.com/bruktbilanalytics/used-car-form/main/brand_model_year.csv")
         .then(response => response.text())
         .then(data => {
             let rows = data.split("\n").map(row => row.trim()).filter(row => row); // Clean up data
