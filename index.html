@@ -149,40 +149,38 @@
 
         // Handle form submission
         document.getElementById("carForm").addEventListener("submit", function(event) {
-            event.preventDefault();
-
-            let email = document.getElementById("email").value;
-            let carEntries = document.querySelectorAll(".car-entry");
-            let carDataArray = [];
-
-            carEntries.forEach(entry => {
-                let brand = entry.querySelector(".brand").value;
-                let model = entry.querySelector(".model").value;
-                let year = entry.querySelector(".year").value.trim();
-
-                if (brand && model && year) {
-                    carDataArray.push({ brand, model, year });
-                }
+                event.preventDefault();
+            
+                let email = document.getElementById("email").value;
+                let carEntries = document.querySelectorAll(".car-entry");
+                let formData = new FormData();
+            
+                formData.append("email", email);
+            
+                carEntries.forEach((entry, index) => {
+                    let brand = entry.querySelector(".brand").value;
+                    let model = entry.querySelector(".model").value;
+                    let year = entry.querySelector(".year").value.trim(); // Remove any newlines
+            
+                    if (brand && model && year) {
+                        formData.append(`brand_${index}`, brand);
+                        formData.append(`model_${index}`, model);
+                        formData.append(`year_${index}`, year);
+                    }
+                });
+            
+                console.log("Sending data to Google Apps Script:", [...formData.entries()]); // ✅ Debugging
+            
+                fetch(scriptURL, { method: "POST", body: formData })
+                    .then(response => response.text())
+                    .then(data => {
+                        console.log("Response from Google Apps Script:", data);
+                        alert("Registreringen er sendt!");
+                        document.getElementById("carForm").reset();
+                        populateBrands(); // Reset dropdowns
+                    })
+                    .catch(error => console.error("Feil ved innsending:", error));
             });
-
-            if (carDataArray.length === 0) {
-                alert("Vennligst legg til minst én bil.");
-                return;
-            }
-
-            let formData = new FormData();
-            formData.append("email", email);
-            formData.append("cars", JSON.stringify(carDataArray));
-
-            fetch(scriptURL, { method: "POST", body: formData })
-                .then(response => response.text())
-                .then(data => {
-                    alert("Registreringen er sendt!");
-                    document.getElementById("carForm").reset();
-                    populateBrands(); // Reset dropdowns
-                })
-                .catch(error => console.error("Feil ved innsending:", error));
-        });
     </script>
 </body>
 </html>
