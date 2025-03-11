@@ -21,12 +21,13 @@
 </form>
 
 
+
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    var brandModelYearMap = {}; // Store brands, models, and years
+    var brandModelYearMap = {}; // Stores brand -> model -> years
 
     // Fetch CSV file from GitHub
-    fetch("https://raw.githubusercontent.com/bruktbilanalytics/used-car-form//main/brand_model_year.csv")
+    fetch("https://raw.githubusercontent.com/YOUR-GITHUB-USERNAME/YOUR-REPO-NAME/main/car_data.csv")
         .then(response => response.text())
         .then(data => {
             let rows = data.split("\n").map(row => row.trim()).filter(row => row); // Clean up data
@@ -36,12 +37,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 let [brand, model, year] = row.split(",");
 
                 if (!brandModelYearMap[brand]) {
-                    brandModelYearMap[brand] = {};
+                    brandModelYearMap[brand] = {}; // Initialize brand object
                 }
                 if (!brandModelYearMap[brand][model]) {
-                    brandModelYearMap[brand][model] = [];
+                    brandModelYearMap[brand][model] = new Set(); // Use Set to store unique years
                 }
-                brandModelYearMap[brand][model].push(year);
+                brandModelYearMap[brand][model].add(year);
             });
 
             // Populate the brand dropdown dynamically
@@ -57,10 +58,10 @@ document.addEventListener("DOMContentLoaded", function () {
             brandDropdown.addEventListener("change", function () {
                 let selectedBrand = brandDropdown.value;
                 let modelDropdown = document.getElementById("model");
-                modelDropdown.innerHTML = "<option value=''>Velg...</option>";
-
                 let yearDropdown = document.getElementById("year");
-                yearDropdown.innerHTML = "<option value=''>Velg...</option>"; // Reset years
+
+                modelDropdown.innerHTML = "<option value=''>Velg...</option>"; // Reset model dropdown
+                yearDropdown.innerHTML = "<option value=''>Velg en modell først...</option>"; // Reset year dropdown
 
                 if (brandModelYearMap[selectedBrand]) {
                     Object.keys(brandModelYearMap[selectedBrand]).forEach(model => {
@@ -79,7 +80,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 let selectedModel = modelDropdown.value;
                 let yearDropdown = document.getElementById("year");
 
-                yearDropdown.innerHTML = "<option value=''>Velg...</option>";
+                yearDropdown.innerHTML = "<option value=''>Velg...</option>"; // Reset year dropdown
 
                 if (brandModelYearMap[selectedBrand] && brandModelYearMap[selectedBrand][selectedModel]) {
                     brandModelYearMap[selectedBrand][selectedModel].forEach(year => {
@@ -94,4 +95,5 @@ document.addEventListener("DOMContentLoaded", function () {
         .catch(error => console.error("Error loading CSV:", error));
 });
 </script>
+
 
