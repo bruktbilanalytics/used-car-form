@@ -1,189 +1,203 @@
-<form id="carForm">
-    <div id="carList">
-        <div class="car-entry">
-            <label for="brand">Velg bilmerke:</label>
-            <select class="brand" name="brand">
-                <option value="">Velg...</option>
-            </select>
-
-            <label for="model">Velg modell:</label>
-            <select class="model" name="model">
-                <option value="">Velg et bilmerke først...</option>
-            </select>
-
-            <label for="year">Velg årsmodell:</label>
-            <select class="year" name="year">
-                <option value="">Velg en modell først...</option>
-            </select>
-
-            <button type="button" class="removeCar">Fjern bil</button>
-        </div>
-    </div>
-
-    <button type="button" id="addCar">Legg til en bil</button>
-
-    <label for="email">E-postadresse:</label>
-    <input type="email" id="email" name="email" placeholder="Din e-post" required>
-
-    <button type="submit">Send inn</button>
-</form>
-
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    var brandModelYearMap = {}; // Stores brand -> models -> years
-
-    // Fetch CSV file from GitHub
-    fetch("https://raw.githubusercontent.com/bruktbilanalytics/used-car-form/main/brand_model_year.csv")
-        .then(response => response.text())
-        .then(data => {
-            let rows = data.split("\n").map(row => row.trim()).filter(row => row);
-            rows.shift(); // Remove header row
-
-            rows.forEach(row => {
-                let [brand, model, year] = row.split(",");
-
-                if (!brandModelYearMap[brand]) {
-                    brandModelYearMap[brand] = {};
-                }
-                if (!brandModelYearMap[brand][model]) {
-                    brandModelYearMap[brand][model] = new Set();
-                }
-                brandModelYearMap[brand][model].add(year);
-            });
-
-            // Function to populate brand dropdown for a given entry
-            function populateBrands(container) {
-                let brandDropdown = container.querySelector(".brand");
-                brandDropdown.innerHTML = "<option value=''>Velg...</option>";
-                Object.keys(brandModelYearMap).forEach(brand => {
-                    let option = document.createElement("option");
-                    option.value = brand;
-                    option.textContent = brand;
-                    brandDropdown.appendChild(option);
-                });
-
-                brandDropdown.addEventListener("change", function () {
-                    populateModels(container);
-                });
-            }
-
-            // Function to populate model dropdown based on selected brand
-            function populateModels(container) {
-                let brandDropdown = container.querySelector(".brand");
-                let modelDropdown = container.querySelector(".model");
-                let yearDropdown = container.querySelector(".year");
-                let selectedBrand = brandDropdown.value;
-
-                modelDropdown.innerHTML = "<option value=''>Velg...</option>";
-                yearDropdown.innerHTML = "<option value=''>Velg en modell først...</option>";
-
-                if (brandModelYearMap[selectedBrand]) {
-                    Object.keys(brandModelYearMap[selectedBrand]).forEach(model => {
-                        let option = document.createElement("option");
-                        option.value = model;
-                        option.textContent = model;
-                        modelDropdown.appendChild(option);
-                    });
-                }
-
-                modelDropdown.addEventListener("change", function () {
-                    populateYears(container);
-                });
-            }
-
-            // Function to populate year dropdown based on selected model
-            function populateYears(container) {
-                let brandDropdown = container.querySelector(".brand");
-                let modelDropdown = container.querySelector(".model");
-                let yearDropdown = container.querySelector(".year");
-                let selectedBrand = brandDropdown.value;
-                let selectedModel = modelDropdown.value;
-
-                yearDropdown.innerHTML = "<option value=''>Velg...</option>";
-
-                if (brandModelYearMap[selectedBrand] && brandModelYearMap[selectedBrand][selectedModel]) {
-                    brandModelYearMap[selectedBrand][selectedModel].forEach(year => {
-                        let option = document.createElement("option");
-                        option.value = year;
-                        option.textContent = year;
-                        yearDropdown.appendChild(option);
-                    });
-                }
-            }
-
-            // Apply dropdown population to the first entry
-            document.querySelectorAll(".car-entry").forEach(populateBrands);
-
-            // Handle adding a new car entry
-            document.getElementById("addCar").addEventListener("click", function () {
-                let carList = document.getElementById("carList");
-                let newEntry = document.createElement("div");
-                newEntry.classList.add("car-entry");
-                newEntry.innerHTML = `
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bruktbil Registrering</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Bruktbil Registrering</h2>
+        <form id="carForm">
+            <div id="carList">
+                <div class="car-entry">
                     <label for="brand">Velg bilmerke:</label>
                     <select class="brand" name="brand">
                         <option value="">Velg...</option>
                     </select>
-
+        
                     <label for="model">Velg modell:</label>
                     <select class="model" name="model">
                         <option value="">Velg et bilmerke først...</option>
                     </select>
-
+        
                     <label for="year">Velg årsmodell:</label>
                     <select class="year" name="year">
                         <option value="">Velg en modell først...</option>
                     </select>
-
+        
                     <button type="button" class="removeCar">Fjern bil</button>
-                `;
-                carList.appendChild(newEntry);
-                populateBrands(newEntry);
-            });
-
-            // Handle removing a car entry
-            document.getElementById("carList").addEventListener("click", function (e) {
-                if (e.target.classList.contains("removeCar")) {
-                    e.target.parentElement.remove();
+                </div>
+            </div>
+        
+            <button type="button" id="addCar">Legg til en bil</button>
+        
+            <label for="email">E-postadresse:</label>
+            <input type="email" id="email" name="email" placeholder="Din e-post" required>
+        
+            <button type="submit">Send inn</button>
+        </form>
+    </div>
+    
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var brandModelYearMap = {}; // Stores brand -> models -> years
+    
+        // Fetch CSV file from GitHub
+        fetch("https://raw.githubusercontent.com/bruktbilanalytics/used-car-form/main/brand_model_year.csv")
+            .then(response => response.text())
+            .then(data => {
+                let rows = data.split("\n").map(row => row.trim()).filter(row => row);
+                rows.shift(); // Remove header row
+    
+                rows.forEach(row => {
+                    let [brand, model, year] = row.split(",");
+    
+                    if (!brandModelYearMap[brand]) {
+                        brandModelYearMap[brand] = {};
+                    }
+                    if (!brandModelYearMap[brand][model]) {
+                        brandModelYearMap[brand][model] = new Set();
+                    }
+                    brandModelYearMap[brand][model].add(year);
+                });
+    
+                // Function to populate brand dropdown for a given entry
+                function populateBrands(container) {
+                    let brandDropdown = container.querySelector(".brand");
+                    brandDropdown.innerHTML = "<option value=''>Velg...</option>";
+                    Object.keys(brandModelYearMap).forEach(brand => {
+                        let option = document.createElement("option");
+                        option.value = brand;
+                        option.textContent = brand;
+                        brandDropdown.appendChild(option);
+                    });
+    
+                    brandDropdown.addEventListener("change", function () {
+                        populateModels(container);
+                    });
                 }
-            });
-
-            // Handle form submission
-            document.getElementById("carForm").addEventListener("submit", function (e) {
-                e.preventDefault();
-
-                let carEntries = document.querySelectorAll(".car-entry");
-                let formData = new FormData();
-                let email = document.getElementById("email").value;
-                formData.append("email", email);
-
-                carEntries.forEach((entry, index) => {
-                    let brand = entry.querySelector(".brand").value;
-                    let model = entry.querySelector(".model").value;
-                    let year = entry.querySelector(".year").value;
-
-                    formData.append(`brand_${index}`, brand);
-                    formData.append(`model_${index}`, model);
-                    formData.append(`year_${index}`, year);
+    
+                // Function to populate model dropdown based on selected brand
+                function populateModels(container) {
+                    let brandDropdown = container.querySelector(".brand");
+                    let modelDropdown = container.querySelector(".model");
+                    let yearDropdown = container.querySelector(".year");
+                    let selectedBrand = brandDropdown.value;
+    
+                    modelDropdown.innerHTML = "<option value=''>Velg...</option>";
+                    yearDropdown.innerHTML = "<option value=''>Velg en modell først...</option>";
+    
+                    if (brandModelYearMap[selectedBrand]) {
+                        Object.keys(brandModelYearMap[selectedBrand]).forEach(model => {
+                            let option = document.createElement("option");
+                            option.value = model;
+                            option.textContent = model;
+                            modelDropdown.appendChild(option);
+                        });
+                    }
+    
+                    modelDropdown.addEventListener("change", function () {
+                        populateYears(container);
+                    });
+                }
+    
+                // Function to populate year dropdown based on selected model
+                function populateYears(container) {
+                    let brandDropdown = container.querySelector(".brand");
+                    let modelDropdown = container.querySelector(".model");
+                    let yearDropdown = container.querySelector(".year");
+                    let selectedBrand = brandDropdown.value;
+                    let selectedModel = modelDropdown.value;
+    
+                    yearDropdown.innerHTML = "<option value=''>Velg...</option>";
+    
+                    if (brandModelYearMap[selectedBrand] && brandModelYearMap[selectedBrand][selectedModel]) {
+                        brandModelYearMap[selectedBrand][selectedModel].forEach(year => {
+                            let option = document.createElement("option");
+                            option.value = year;
+                            option.textContent = year;
+                            yearDropdown.appendChild(option);
+                        });
+                    }
+                }
+    
+                // Apply dropdown population to the first entry
+                document.querySelectorAll(".car-entry").forEach(populateBrands);
+    
+                // Handle adding a new car entry
+                document.getElementById("addCar").addEventListener("click", function () {
+                    let carList = document.getElementById("carList");
+                    let newEntry = document.createElement("div");
+                    newEntry.classList.add("car-entry");
+                    newEntry.innerHTML = `
+                        <label for="brand">Velg bilmerke:</label>
+                        <select class="brand" name="brand">
+                            <option value="">Velg...</option>
+                        </select>
+    
+                        <label for="model">Velg modell:</label>
+                        <select class="model" name="model">
+                            <option value="">Velg et bilmerke først...</option>
+                        </select>
+    
+                        <label for="year">Velg årsmodell:</label>
+                        <select class="year" name="year">
+                            <option value="">Velg en modell først...</option>
+                        </select>
+    
+                        <button type="button" class="removeCar">Fjern bil</button>
+                    `;
+                    carList.appendChild(newEntry);
+                    populateBrands(newEntry);
                 });
-
-                fetch("https://script.google.com/macros/s/AKfycby-_rXwlHsJmtStYLSwd2ghkwbV1opCa957GaukhS2k1c6RoYHy21zjIbNyTz9i9tgE/exec", {
-                    method: "POST",
-                    body: new URLSearchParams(formData),
-                    headers: { "Content-Type": "application/x-www-form-urlencoded" }
-                })
-                .then(response => response.text())
-                .then(data => {
-                    alert("Dine biler er sendt inn!");
-                    document.getElementById("carForm").reset();
-                    document.getElementById("carList").innerHTML = ""; // Clear all added entries
-                })
-                .catch(error => {
-                    alert("Noe gikk galt. Prøv igjen.");
-                    console.error(error);
+    
+                // Handle removing a car entry
+                document.getElementById("carList").addEventListener("click", function (e) {
+                    if (e.target.classList.contains("removeCar")) {
+                        e.target.parentElement.remove();
+                    }
                 });
-            });
-        })
-        .catch(error => console.error("Error loading CSV:", error));
-});
-</script>
+    
+                // Handle form submission
+                document.getElementById("carForm").addEventListener("submit", function (e) {
+                    e.preventDefault();
+    
+                    let carEntries = document.querySelectorAll(".car-entry");
+                    let formData = new FormData();
+                    let email = document.getElementById("email").value;
+                    formData.append("email", email);
+    
+                    carEntries.forEach((entry, index) => {
+                        let brand = entry.querySelector(".brand").value;
+                        let model = entry.querySelector(".model").value;
+                        let year = entry.querySelector(".year").value;
+    
+                        formData.append(`brand_${index}`, brand);
+                        formData.append(`model_${index}`, model);
+                        formData.append(`year_${index}`, year);
+                    });
+    
+                    fetch("https://script.google.com/macros/s/AKfycby-_rXwlHsJmtStYLSwd2ghkwbV1opCa957GaukhS2k1c6RoYHy21zjIbNyTz9i9tgE/exec", {
+                        method: "POST",
+                        body: new URLSearchParams(formData),
+                        headers: { "Content-Type": "application/x-www-form-urlencoded" }
+                    })
+                    .then(response => response.text())
+                    .then(data => {
+                        alert("Dine biler er sendt inn!");
+                        document.getElementById("carForm").reset();
+                        document.getElementById("carList").innerHTML = ""; // Clear all added entries
+                    })
+                    .catch(error => {
+                        alert("Noe gikk galt. Prøv igjen.");
+                        console.error(error);
+                    });
+                });
+            })
+            .catch(error => console.error("Error loading CSV:", error));
+    });
+    </script>
+</body>
+</html>
