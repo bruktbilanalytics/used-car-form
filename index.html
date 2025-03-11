@@ -15,20 +15,20 @@
                     <div>
                         <label for="brand">Bilmerke:</label>
                         <select class="brand" name="brand">
-                            <option value="">Velg...</option>
+                            <option value="">Laster...</option>
                         </select>
                     </div>
 
                     <div>
                         <label for="model">Modell:</label>
-                        <select class="model" name="model">
+                        <select class="model" name="model" disabled>
                             <option value="">Velg et bilmerke først...</option>
                         </select>
                     </div>
 
                     <div>
                         <label for="year">Årsmodell:</label>
-                        <select class="year" name="year">
+                        <select class="year" name="year" disabled>
                             <option value="">Velg en modell først...</option>
                         </select>
                     </div>
@@ -48,7 +48,76 @@
 
     <script>
         const scriptURL = "https://script.google.com/macros/s/AKfycby-_rXwlHsJmtStYLSwd2ghkwbV1opCa957GaukhS2k1c6RoYHy21zjIbNyTz9i9tgE/exec";
-        
+        const csvURL = "https://raw.githubusercontent.com/bruktbilanalytics/used-car-form/main/brand_model_year.csv";
+        let carData = {};
+
+        // Load CSV Data
+        fetch(csvURL)
+            .then(response => response.text())
+            .then(csvText => {
+                let rows = csvText.split("\n").map(row => row.split(","));
+                carData = {};
+
+                rows.forEach(row => {
+                    let [brand, model, year] = row;
+                    if (!carData[brand]) carData[brand] = {};
+                    if (!carData[brand][model]) carData[brand][model] = [];
+                    carData[brand][model].push(year);
+                });
+
+                populateBrands();
+            })
+            .catch(error => console.error("Feil ved lasting av CSV:", error));
+
+        // Populate Brands
+        function populateBrands() {
+            document.querySelectorAll(".brand").forEach(select => {
+                select.innerHTML = `<option value="">Velg bilmerke...</option>`;
+                Object.keys(carData).forEach(brand => {
+                    select.innerHTML += `<option value="${brand}">${brand}</option>`;
+                });
+            });
+        }
+
+        // Handle Brand Change
+        document.addEventListener("change", function(event) {
+            if (event.target.classList.contains("brand")) {
+                let brand = event.target.value;
+                let modelSelect = event.target.closest(".car-entry").querySelector(".model");
+                modelSelect.innerHTML = `<option value="">Velg en modell...</option>`;
+                modelSelect.disabled = !brand;
+
+                if (brand) {
+                    Object.keys(carData[brand]).forEach(model => {
+                        modelSelect.innerHTML += `<option value="${model}">${model}</option>`;
+                    });
+                }
+
+                // Reset year selection
+                let yearSelect = event.target.closest(".car-entry").querySelector(".year");
+                yearSelect.innerHTML = `<option value="">Velg en modell først...</option>`;
+                yearSelect.disabled = true;
+            }
+        });
+
+        // Handle Model Change
+        document.addEventListener("change", function(event) {
+            if (event.target.classList.contains("model")) {
+                let brand = event.target.closest(".car-entry").querySelector(".brand").value;
+                let model = event.target.value;
+                let yearSelect = event.target.closest(".car-entry").querySelector(".year");
+                yearSelect.innerHTML = `<option value="">Velg en år...</option>`;
+                yearSelect.disabled = !model;
+
+                if (brand && model) {
+                    carData[brand][model].forEach(year => {
+                        yearSelect.innerHTML += `<option value="${year}">${year}</option>`;
+                    });
+                }
+            }
+        });
+
+        // Add new car entry
         document.getElementById("addCar").addEventListener("click", function() {
             let carList = document.getElementById("carList");
             let firstEntry = carList.querySelector(".car-entry");
@@ -56,17 +125,20 @@
             if (firstEntry) {
                 let newEntry = firstEntry.cloneNode(true);
 
-                // Reset values in the cloned entry
                 newEntry.querySelector(".brand").value = "";
-                newEntry.querySelector(".model").value = "";
-                newEntry.querySelector(".year").value = "";
+                newEntry.querySelector(".model").innerHTML = `<option value="">Velg et bilmerke først...</option>`;
+                newEntry.querySelector(".model").disabled = true;
+                newEntry.querySelector(".year").innerHTML = `<option value="">Velg en modell først...</option>`;
+                newEntry.querySelector(".year").disabled = true;
 
-                // Ensure remove button works
                 newEntry.querySelector(".removeCar").addEventListener("click", function() {
                     newEntry.remove();
                 });
 
                 carList.appendChild(newEntry);
+
+                // Populate new brand dropdown
+                populateBrands();
             }
         });
 
@@ -75,37 +147,39 @@
             this.closest(".car-entry").remove();
         });
 
+        // Handle form submission
         document.getElementById("carForm").addEventListener("submit", function(event) {
             event.preventDefault();
 
             let email = document.getElementById("email").value;
             let carEntries = document.querySelectorAll(".car-entry");
-            let carData = [];
+            let carDataArray = [];
 
             carEntries.forEach(entry => {
                 let brand = entry.querySelector(".brand").value;
                 let model = entry.querySelector(".model").value;
                 let year = entry.querySelector(".year").value;
-                
+
                 if (brand && model && year) {
-                    carData.push({ brand, model, year });
+                    carDataArray.push({ brand, model, year });
                 }
             });
 
-            if (carData.length === 0) {
+            if (carDataArray.length === 0) {
                 alert("Vennligst legg til minst én bil.");
                 return;
             }
 
             let formData = new FormData();
             formData.append("email", email);
-            formData.append("cars", JSON.stringify(carData));
+            formData.append("cars", JSON.stringify(carDataArray));
 
             fetch(scriptURL, { method: "POST", body: formData })
                 .then(response => response.text())
                 .then(data => {
                     alert("Registreringen er sendt!");
                     document.getElementById("carForm").reset();
+                    populateBrands(); // Reset dropdowns
                 })
                 .catch(error => console.error("Feil ved innsending:", error));
         });
