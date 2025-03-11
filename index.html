@@ -158,7 +158,7 @@
             carEntries.forEach(entry => {
                 let brand = entry.querySelector(".brand").value;
                 let model = entry.querySelector(".model").value;
-                let year = entry.querySelector(".year").value;
+                let year = entry.querySelector(".year").value.trim();
 
                 if (brand && model && year) {
                     carDataArray.push({ brand, model, year });
