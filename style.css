@@ -13,75 +13,92 @@ body {
 /* Form Container */
 .container {
     background: white;
-    padding: 20px;
+    padding: 25px;
     border-radius: 10px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     width: 90%;
-    max-width: 500px;
+    max-width: 650px; /* Slightly wider to fit selects on same row */
 }
 
 /* Heading */
 h2 {
     text-align: center;
     color: #333;
+    font-size: 24px;
 }
 
 /* Labels */
 label {
     font-weight: bold;
-    margin-top: 10px;
+    margin-top: 15px;
     display: block;
-    color: #555;
+    color: #444;
+    font-size: 16px;
+}
+
+/* Dropdown Row */
+.car-entry {
+    background: #f9f9f9;
+    padding: 18px;
+    border-radius: 6px;
+    margin-top: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.car-entry select {
+    flex: 1; /* Makes all selects evenly spaced */
+    min-width: 30%;
 }
 
 /* Inputs and Dropdowns */
 select, input {
     width: 100%;
-    padding: 10px;
-    margin-top: 5px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    padding: 12px;
+    border: 1px solid #bbb;
+    border-radius: 6px;
     font-size: 16px;
+    background: #fff;
+    transition: all 0.3s ease;
+}
+
+select:focus, input:focus {
+    border-color: #007BFF;
+    outline: none;
 }
 
 /* Buttons */
 button {
-    background-color: #007BFF;
+    background-color: #FF9800;
     color: white;
-    padding: 12px;
+    padding: 14px;
     border: none;
     width: 100%;
-    border-radius: 5px;
-    font-size: 16px;
+    border-radius: 6px;
+    font-size: 18px;
     cursor: pointer;
-    margin-top: 10px;
-    transition: background 0.3s;
+    margin-top: 12px;
+    transition: background 0.3s ease;
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #e68900;
 }
 
 /* Remove Car Button */
 .removeCar {
     background-color: #dc3545;
-    margin-top: 5px;
+    margin-top: 8px;
+    width: auto;
+    padding: 10px;
+    font-size: 14px;
 }
 
 .removeCar:hover {
     background-color: #b02a37;
-}
-
-/* Car Entry Styling */
-.car-entry {
-    background: #f9f9f9;
-    padding: 15px;
-    border-radius: 5px;
-    margin-top: 10px;
-}
-
-.car-entry:not(:first-child) {
-    border-top: 2px solid #ccc;
 }
 
 /* Add Car Button */
