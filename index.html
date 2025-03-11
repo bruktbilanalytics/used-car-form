@@ -1,52 +1,73 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Used Car Selection</title>
-</head>
-<body>
+<form id="carForm">
+    <label for="brand">Velg bilmerke:</label>
+    <select id="brand" name="brand">
+        <option value="">Velg...</option>
+        <option value="BMW">BMW</option>
+        <option value="Audi">Audi</option>
+        <option value="Toyota">Toyota</option>
+        <option value="Tesla">Tesla</option>
+    </select>
 
-    <h2>Find Your Used Car</h2>
+    <label for="model">Velg modell:</label>
+    <select id="model" name="model">
+        <option value="">Velg et bilmerke først...</option>
+    </select>
 
-    <!-- JotForm Embed Code -->
-    <iframe id="jotform" src="https://form.jotform.com/250686956892073" width="100%" height="800px" frameborder="0"></iframe>
+    <label for="year">Angi årsmodell:</label>
+    <input type="text" id="year" name="year" placeholder="Eks: 2020">
 
-    <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        var brandModelMap = {
-            "BMW": ["X1", "X3", "X5", "M3", "M4"],
-            "Audi": ["A3", "A4", "Q5", "Q7", "R8"],
-            "Toyota": ["Corolla", "Camry", "RAV4", "Highlander", "Supra"],
-            "Tesla": ["Model S", "Model 3", "Model X", "Model Y"],
-        };
+    <label for="email">E-postadresse:</label>
+    <input type="email" id="email" name="email" placeholder="Din e-post" required>
 
-        // Wait for the form to load inside the iframe
-        var iframe = document.getElementById("jotform");
-        iframe.onload = function () {
-            var doc = iframe.contentWindow.document;
+    <button type="submit">Send inn</button>
+</form>
 
-            var brandDropdown = doc.querySelector("[name='q1_selectACarBrand']");
-            var modelDropdown = doc.querySelector("[name='q2_selectAModel']");
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    var brandModelMap = {
+        "BMW": ["X1", "X3", "X5", "M3", "M4"],
+        "Audi": ["A3", "A4", "Q5", "Q7", "R8"],
+        "Toyota": ["Corolla", "Camry", "RAV4", "Highlander", "Supra"],
+        "Tesla": ["Model S", "Model 3", "Model X", "Model Y"],
+    };
 
-            if (brandDropdown && modelDropdown) {
-                brandDropdown.addEventListener("change", function () {
-                    var selectedBrand = brandDropdown.value;
-                    modelDropdown.innerHTML = "";
+    var brandDropdown = document.getElementById("brand");
+    var modelDropdown = document.getElementById("model");
 
-                    if (brandModelMap[selectedBrand]) {
-                        brandModelMap[selectedBrand].forEach(function (model) {
-                            var option = document.createElement("option");
-                            option.value = model;
-                            option.textContent = model;
-                            modelDropdown.appendChild(option);
-                        });
-                    }
-                });
-            }
-        };
+    brandDropdown.addEventListener("change", function () {
+        var selectedBrand = brandDropdown.value;
+        modelDropdown.innerHTML = "<option value=''>Velg...</option>";
+
+        if (brandModelMap[selectedBrand]) {
+            brandModelMap[selectedBrand].forEach(function (model) {
+                var option = document.createElement("option");
+                option.value = model;
+                option.textContent = model;
+                modelDropdown.appendChild(option);
+            });
+        }
     });
-    </script>
 
-</body>
-</html>
+    document.getElementById("carForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        var formData = new FormData(this);
+        var params = new URLSearchParams(formData).toString();
+
+        fetch("YOUR_GOOGLE_SCRIPT_WEB_APP_URL", {
+            method: "POST",
+            body: params,
+            headers: { "Content-Type": "application/x-www-form-urlencoded" }
+        })
+        .then(response => response.text())
+        .then(data => {
+            alert("Ditt valg er sendt inn!");
+            document.getElementById("carForm").reset();
+        })
+        .catch(error => {
+            alert("Noe gikk galt. Prøv igjen.");
+            console.error(error);
+        });
+    });
+});
+</script>
