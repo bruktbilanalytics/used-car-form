@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", function () {
         var formData = new FormData(this);
         var params = new URLSearchParams(formData).toString();
 
-        fetch("YOUR_GOOGLE_SCRIPT_WEB_APP_URL", {
+        fetch("https://script.google.com/macros/s/AKfycbwhNMgxvtpuomB6GayNuVAcTe3II_aOPZBgbOIYfmXlF23QhgCJkw3bMJQu3bZ80QJYKA/exec", {
             method: "POST",
             body: params,
             headers: { "Content-Type": "application/x-www-form-urlencoded" }
