@@ -17,7 +17,7 @@ body {
     border-radius: 10px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     width: 90%;
-    max-width: 700px; /* Slightly increased width to fit all fields */
+    max-width: 700px;
 }
 
 /* Heading */
@@ -36,23 +36,28 @@ label {
     margin-bottom: 5px;
 }
 
-/* Row Layout */
+/* Row Layout - Keeps all selects in one row */
 .car-entry {
     background: #f9f9f9;
     padding: 15px;
     border-radius: 6px;
     margin-top: 12px;
     display: flex;
+    flex-wrap: nowrap; /* Ensures items stay in one row */
     gap: 10px;
     align-items: center;
     justify-content: space-between;
-    flex-wrap: wrap;
 }
 
-/* Ensures all selects are evenly spaced */
-.car-entry select {
+/* Makes sure each dropdown takes equal space */
+.car-entry div {
     flex: 1;
     min-width: 30%;
+}
+
+/* Dropdowns Styling */
+.car-entry select {
+    width: 100%;
     padding: 12px;
     font-size: 16px;
     border-radius: 6px;
