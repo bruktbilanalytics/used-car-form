@@ -156,16 +156,17 @@
                 let formData = new FormData();
             
                 formData.append("email", email);
-            
-                carEntries.forEach((entry, index) => {
+                let index = 0;
+                carEntries.forEach(entry => {
                     let brand = entry.querySelector(".brand").value;
                     let model = entry.querySelector(".model").value;
-                    let year = entry.querySelector(".year").value.trim(); // Remove any newlines
+                    let year = entry.querySelector(".year").value.trim(); // ✅ Remove newlines
             
                     if (brand && model && year) {
                         formData.append(`brand_${index}`, brand);
                         formData.append(`model_${index}`, model);
                         formData.append(`year_${index}`, year);
+                        index++; // ✅ Increment only when a valid entry is found
                     }
                 });
             
