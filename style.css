@@ -1,0 +1,94 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Form Container */
+.container {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 500px;
+}
+
+/* Heading */
+h2 {
+    text-align: center;
+    color: #333;
+}
+
+/* Labels */
+label {
+    font-weight: bold;
+    margin-top: 10px;
+    display: block;
+    color: #555;
+}
+
+/* Inputs and Dropdowns */
+select, input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+/* Buttons */
+button {
+    background-color: #007BFF;
+    color: white;
+    padding: 12px;
+    border: none;
+    width: 100%;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Remove Car Button */
+.removeCar {
+    background-color: #dc3545;
+    margin-top: 5px;
+}
+
+.removeCar:hover {
+    background-color: #b02a37;
+}
+
+/* Car Entry Styling */
+.car-entry {
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.car-entry:not(:first-child) {
+    border-top: 2px solid #ccc;
+}
+
+/* Add Car Button */
+#addCar {
+    background-color: #28a745;
+}
+
+#addCar:hover {
+    background-color: #218838;
+}
