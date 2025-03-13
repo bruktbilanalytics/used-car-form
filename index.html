@@ -13,20 +13,23 @@
             <div id="carList">
                 <div class="car-entry">
                     <div>
+                        <label for="brand">Bilmerke:</label>
                         <select class="brand" name="brand">
                             <option value="">Laster...</option>
                         </select>
                     </div>
 
-                    <div> 
+                    <div>
+                        <label for="model">Modell:</label>
                         <select class="model" name="model" disabled>
-                            <option value="">Velg et bilmodell</option>
+                            <option value="">Velg et bilmerke først...</option>
                         </select>
                     </div>
 
-                    <div>                     
+                    <div>
+                        <label for="year">Årsmodell:</label>
                         <select class="year" name="year" disabled>
-                            <option value="">Velg en årsmodell</option>
+                            <option value="">Velg en modell først...</option>
                         </select>
                     </div>
 
@@ -115,28 +118,49 @@
         });
 
         // Add new car entry
-        document.getElementById("addCar").addEventListener("click", function() {
+        document.getElementById("addCar").addEventListener("click", function () {
             let carList = document.getElementById("carList");
-            let firstEntry = carList.querySelector(".car-entry");
-            
-            if (firstEntry) {
-                let newEntry = firstEntry.cloneNode(true);
 
-                newEntry.querySelector(".brand").value = "";
-                newEntry.querySelector(".model").innerHTML = `<option value="">Velg et bilmerke først...</option>`;
-                newEntry.querySelector(".model").disabled = true;
-                newEntry.querySelector(".year").innerHTML = `<option value="">Velg en modell først...</option>`;
-                newEntry.querySelector(".year").disabled = true;
+            // ✅ Create a new div for the car entry
+            let newEntry = document.createElement("div");
+            newEntry.classList.add("car-entry");
 
-                newEntry.querySelector(".removeCar").addEventListener("click", function() {
-                    newEntry.remove();
-                });
+            // ✅ Create the brand dropdown
+            let brandSelect = document.createElement("select");
+            brandSelect.classList.add("brand");
+            brandSelect.innerHTML = document.querySelector(".brand").innerHTML; // Copy brand options
+            brandSelect.addEventListener("change", function () {
+                updateModels(newEntry); // Load models dynamically
+            });
 
-                carList.appendChild(newEntry);
+            // ✅ Create the model dropdown
+            let modelSelect = document.createElement("select");
+            modelSelect.classList.add("model");
+            modelSelect.innerHTML = `<option value="">Velg et bilmerke først...</option>`;
+            modelSelect.disabled = true;
 
-                // Populate new brand dropdown
-                populateBrands();
-            }
+            // ✅ Create the year dropdown
+            let yearSelect = document.createElement("select");
+            yearSelect.classList.add("year");
+            yearSelect.innerHTML = `<option value="">Velg en modell først...</option>`;
+            yearSelect.disabled = true;
+
+            // ✅ Create the remove button
+            let removeButton = document.createElement("button");
+            removeButton.textContent = "Fjern";
+            removeButton.classList.add("removeCar");
+            removeButton.addEventListener("click", function () {
+                newEntry.remove();
+            });
+
+            // ✅ Append elements to new entry
+            newEntry.appendChild(brandSelect);
+            newEntry.appendChild(modelSelect);
+            newEntry.appendChild(yearSelect);
+            newEntry.appendChild(removeButton);
+
+            // ✅ Append the new entry to the list
+            carList.appendChild(newEntry);
         });
 
         // Ensure the remove button works for the first entry
